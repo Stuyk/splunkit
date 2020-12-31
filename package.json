@@ -2,7 +2,7 @@
     "name": "splunkit",
     "displayName": "Splunkit",
     "description": "A splunk or spl formatter extension.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "publisher": "stuyk",
     "repository": "https://github.com/stuyk/splunkit",
     "engines": {
@@ -12,7 +12,8 @@
         "Formatters"
     ],
     "activationEvents": [
-        "workspaceContains:**/*.spl"
+        "workspaceContains:**/*.spl",
+        "onCommand:extension.formatSPL"
     ],
     "main": "./out/extension.js",
     "contributes": {
