@@ -2,6 +2,11 @@
 
 A code formatter for .spl files.
 
+Written by:
+
+-   [stuyk](https://github.com/stuyk)
+-   [BrendanHiggins](https://github.com/BrendanHiggins)
+
 ## Usage
 
 ```
