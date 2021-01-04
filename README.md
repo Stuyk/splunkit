@@ -22,8 +22,3 @@ If you are running this from the cloned github repository.
     -   Run the extension in a new VS Code window
 
 You can also hit F5 in VSCode to debug the extension.
-
-## Authors
-
--   [stuyk](https://github.com/stuyk)
--   [BrendanHiggins](https://github.com/BrendanHiggins)
