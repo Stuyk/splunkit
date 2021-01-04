@@ -1,7 +1,8 @@
 # Splunkit
 
 A code formatter/beautify for .spl files - specifically around stats and rename commands. 
-For functionality similar to Splunk App 'Ctrl + \' functionality the "Format SPL" Extension Command from VS Extension 'Splunk Search Autocompletion Tool' (by arcsector) works well and is auto-run by this extension.
+
+For functionality similar to Splunk App 'Ctrl + \\' functionality the "Format SPL" Extension Command from VS Extension 'Splunk Search Autocompletion Tool' (by arcsector) works well and is auto-run by this extension.
 
 ## Usage
 
