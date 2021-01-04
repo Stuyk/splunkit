@@ -1,17 +1,13 @@
 # Splunkit
 
-A code formatter for .spl files.
-
-Written by:
-
--   [stuyk](https://github.com/stuyk)
--   [BrendanHiggins](https://github.com/BrendanHiggins)
+A code formatter/beautify for .spl files - specifically around stats and rename commands. 
+For functionality similar to Splunk App 'Ctrl + \' functionality the "Format SPL" Extension Command from VS Extension 'Splunk Search Autocompletion Tool' (by arcsector) works well and is auto-run by this extension.
 
 ## Usage
 
 ```
 Ctrl + Shift + P
-> Format SPL
+> SPL Beautify
 ```
 
 ## Installation / Testing
@@ -24,4 +20,9 @@ If you are running this from the cloned github repository.
     -   Start a task `npm: watch` to compile the code
     -   Run the extension in a new VS Code window
 
-You can also just hit F5 in VSCode to debug the extension.
+You can also hit F5 in VSCode to debug the extension.
+
+## Authors
+
+-   [stuyk](https://github.com/stuyk)
+-   [BrendanHiggins](https://github.com/BrendanHiggins)
