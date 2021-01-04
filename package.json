@@ -15,8 +15,8 @@
     ],
     "icon": "icon.png",
     "galleryBanner": {
-      "color": "#C80000",
-      "theme": "dark"
+        "color": "#C80000",
+        "theme": "dark"
     },
     "activationEvents": [
         "workspaceContains:**/*.spl",

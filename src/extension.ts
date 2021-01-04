@@ -1,18 +1,17 @@
 import * as vscode from 'vscode';
 
 //Execute arcsector's really good formatter first, if user has it installed.
-var arcsectorLint =  vscode.extensions.getExtension('arcsector.vscode-splunk-search-linter');
-if( arcsectorLint.isActive == true ){
-    console.log('>> Arcsector Extension Found - Attempting Prettify')
+const arcsectorLint = vscode.extensions.getExtension('arcsector.vscode-splunk-search-linter');
+if (arcsectorLint && arcsectorLint.isActive == true) {
+    console.log('>> Arcsector Extension Found - Attempting Prettify');
     try {
         //https://github.com/arcsector/vscode-splunk-search-linter/blob/master/package.json
-        vscode.commands.executeCommand("splunk_search.Prettify");
+        vscode.commands.executeCommand('splunk_search.Prettify');
+    } catch (err) {
+        console.log('Arcsector Err');
     }
-      catch(err) {
-        console.log('Arcsector Err')
-    }
-}else{
-    console.log('Try Activating arcsector extensions?')
+} else {
+    console.log('Try Activating arcsector extensions?');
 }
 
 //Extension
@@ -23,7 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
         const { activeTextEditor } = vscode.window;
 
         if (activeTextEditor && activeTextEditor.document.fileName.includes('.spl')) {
-
             // Handle Rename Formatting
             await renameFormat(activeTextEditor.document).then((res) => {
                 return res;
@@ -35,7 +33,6 @@ export function activate(context: vscode.ExtensionContext) {
             });
 
             console.log(`SPL Beautify Complete.`);
-            
         }
     });
     context.subscriptions.push(disposable);
@@ -55,16 +52,16 @@ async function renameFormat(document: vscode.TextDocument) {
     for (let i = 0; i < document.lineCount; i++) {
         const currentLine = document.lineAt(i);
         if (rexRename.test(currentLine.text)) {
-            var newLine = currentLine.text
-            newLine = newLine.replace(rexRenameNoText, '| rename \n')
-            newLine = newLine.replace(rexRenameClean1, '$1\n')
-            newLine = newLine.replace(rexRenameClean2, '$1')
-            newLine = newLine.replace(rexComma, '')
-            newLine = newLine.trim()
-            newLine = newLine.replace(rexRenameClean1, '\t$1,')
-            var lastChar = newLine.substr(newLine.length - 1)
-            if (lastChar == ","){
-                newLine = newLine.slice(0, -1)
+            let newLine = currentLine.text;
+            newLine = newLine.replace(rexRenameNoText, '| rename \n');
+            newLine = newLine.replace(rexRenameClean1, '$1\n');
+            newLine = newLine.replace(rexRenameClean2, '$1');
+            newLine = newLine.replace(rexComma, '');
+            newLine = newLine.trim();
+            newLine = newLine.replace(rexRenameClean1, '\t$1,');
+            let lastChar = newLine.substr(newLine.length - 1);
+            if (lastChar == ',') {
+                newLine = newLine.slice(0, -1);
             }
             edit.replace(document.uri, currentLine.range, currentLine.text.replace(currentLine.text, newLine));
         }
@@ -85,17 +82,17 @@ async function statsFormat(document: vscode.TextDocument) {
     for (let i = 0; i < document.lineCount; i++) {
         const currentLine = document.lineAt(i);
         if (rexStats.test(currentLine.text)) {
-            var newLine = currentLine.text
-            newLine = newLine.replace(rexStatsNoText, '| stats \n')
-            newLine = newLine.replace(rexStatsClean1, '$1\n')
-            newLine = newLine.replace(rexStatsClean2, '$1')
-            newLine = newLine.replace(rexComma, '')
-            newLine = newLine.trim()
-            newLine = newLine.replace(rexStatsClean1, '\t$1,')
-            newLine = newLine.replace(rexStatsClean4, '\t$1,')
-            var lastChar = newLine.substr(newLine.length - 1)
-            if (lastChar == ","){
-                newLine = newLine.slice(0, -1)
+            let newLine = currentLine.text;
+            newLine = newLine.replace(rexStatsNoText, '| stats \n');
+            newLine = newLine.replace(rexStatsClean1, '$1\n');
+            newLine = newLine.replace(rexStatsClean2, '$1');
+            newLine = newLine.replace(rexComma, '');
+            newLine = newLine.trim();
+            newLine = newLine.replace(rexStatsClean1, '\t$1,');
+            newLine = newLine.replace(rexStatsClean4, '\t$1,');
+            let lastChar = newLine.substr(newLine.length - 1);
+            if (lastChar == ',') {
+                newLine = newLine.slice(0, -1);
             }
             edit.replace(document.uri, currentLine.range, currentLine.text.replace(currentLine.text, newLine));
         }
