@@ -2,7 +2,7 @@
     "name": "splunkit",
     "displayName": "Splunkit",
     "description": "A .spl (Splunk) formatter extension.",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "publisher": "stuyk",
     "repository": "https://github.com/stuyk/splunkit",
     "engines": {
