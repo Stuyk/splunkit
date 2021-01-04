@@ -1,89 +1,104 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// Add Newlines on Pipes | and Subsearch Brackets [
-const pipeRegex = new RegExp(/\s+\|\s+/gm);
-const bracketRegexFront = new RegExp(/\s+\[\s{0,1}/gm);
+//Execute arcsector's really good formatter first, if user has it installed.
+var arcsectorLint =  vscode.extensions.getExtension('arcsector.vscode-splunk-search-linter');
+if( arcsectorLint.isActive == true ){
+    console.log('>> Arcsector Extension Found - Attempting Prettify')
+    try {
+        //https://github.com/arcsector/vscode-splunk-search-linter/blob/master/package.json
+        vscode.commands.executeCommand("splunk_search.Prettify");
+    }
+      catch(err) {
+        console.log('Arcsector Err')
+    }
+}else{
+    console.log('Try Activating arcsector extensions?')
+}
 
+//Extension
 export function activate(context: vscode.ExtensionContext) {
-    console.log(`SPL Formatter has started.`);
-
+    console.log(`SPL Beautify has started.`);
     let disposable;
-
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with registerCommand
-    // The commandId parameter must match the command field in package.json
-    disposable = vscode.commands.registerCommand('extension.formatSPL', async () => {
+    disposable = vscode.commands.registerCommand('extension.beautifySPL', async () => {
         const { activeTextEditor } = vscode.window;
 
         if (activeTextEditor && activeTextEditor.document.fileName.includes('.spl')) {
-            // Run Newline Clenaup
-            await newLineCleanup(activeTextEditor.document).then((res) => {
+
+            // Handle Rename Formatting
+            await renameFormat(activeTextEditor.document).then((res) => {
                 return res;
             });
 
-            // Handle Subsearch Indentation
-            await bracketCleanup(activeTextEditor.document).then((res) => {
+            // Handle Stats Formatting
+            await statsFormat(activeTextEditor.document).then((res) => {
                 return res;
             });
 
-            // console.log(
-            //     activeTextEditor.document.getText(
-            //         new vscode.Range(
-            //             new vscode.Position(0, 0),
-            //             new vscode.Position(activeTextEditor.document.lineCount, 0)
-            //         )
-            //     )
-            // );
+            console.log(`SPL Beautify Complete.`);
+            
         }
     });
-
     context.subscriptions.push(disposable);
 }
 
-async function newLineCleanup(document: vscode.TextDocument) {
+//General Regex
+const rexComma = new RegExp(/,/gm);
+
+// Rename Regex
+const rexRename = new RegExp(/\|\s{0,1}rename\s{0,1}\w+/gm);
+const rexRenameNoText = new RegExp(/\|\s{0,1}rename\s{0,1}/gm);
+const rexRenameClean1 = new RegExp(/(\w+ as \w+)/gm);
+const rexRenameClean2 = new RegExp(/ {1,}(\w+ as \w+)/gm);
+// Rename Function
+async function renameFormat(document: vscode.TextDocument) {
     const edit = new vscode.WorkspaceEdit();
-
-    //
-
     for (let i = 0; i < document.lineCount; i++) {
         const currentLine = document.lineAt(i);
-        if (pipeRegex.test(currentLine.text)) {
-            edit.replace(document.uri, currentLine.range, currentLine.text.replace(pipeRegex, '\n| '));
-        }
-
-        if (bracketRegexFront.test(currentLine.text)) {
-            edit.replace(document.uri, currentLine.range, currentLine.text.replace(bracketRegexFront, '\n    [ '));
+        if (rexRename.test(currentLine.text)) {
+            var newLine = currentLine.text
+            newLine = newLine.replace(rexRenameNoText, '| rename \n')
+            newLine = newLine.replace(rexRenameClean1, '$1\n')
+            newLine = newLine.replace(rexRenameClean2, '$1')
+            newLine = newLine.replace(rexComma, '')
+            newLine = newLine.trim()
+            newLine = newLine.replace(rexRenameClean1, '\t$1,')
+            var lastChar = newLine.substr(newLine.length - 1)
+            if (lastChar == ","){
+                newLine = newLine.slice(0, -1)
+            }
+            edit.replace(document.uri, currentLine.range, currentLine.text.replace(currentLine.text, newLine));
         }
     }
-
     return vscode.workspace.applyEdit(edit);
 }
 
-// Subsearch Bracket Indentation
-const bracketRegexBack = new RegExp(/\s{0,1}\]\s{0,1}/gm);
-async function bracketCleanup(document: vscode.TextDocument) {
+// Stats Regex
+const rexStats = new RegExp(/\|\s{0,1}stats\s{0,1}\w+/gm);
+const rexStatsNoText = new RegExp(/\|\s{0,1}stats\s{0,1}/gm);
+const rexStatsClean1 = new RegExp(/((\w+\s{0,}\(.*?\)){1}(\sas\s\w+){0,1})/gm);
+const rexStatsClean2 = new RegExp(/ {1,}((\w+\s{0,}\(.*?\)){1}(\sas\s\w+){0,1})/gm);
+//const rexStatsClean3 = new RegExp(/(\w+\s{1,}\(.*?\)){1}/gm);
+const rexStatsClean4 = new RegExp(/((count){0,1} by \w+)/gm);
+// Stats Function
+async function statsFormat(document: vscode.TextDocument) {
     const edit = new vscode.WorkspaceEdit();
-
-    let toggleBracketSpacing = false;
-
     for (let i = 0; i < document.lineCount; i++) {
         const currentLine = document.lineAt(i);
-        if (bracketRegexFront.test(currentLine.text)) {
-            toggleBracketSpacing = true;
-            continue;
-        }
-
-        if (toggleBracketSpacing) {
-            edit.replace(document.uri, currentLine.range, `    ${currentLine.text}`);
-        }
-
-        if (bracketRegexBack.test(currentLine.text)) {
-            toggleBracketSpacing = false;
-            continue;
+        if (rexStats.test(currentLine.text)) {
+            var newLine = currentLine.text
+            newLine = newLine.replace(rexStatsNoText, '| stats \n')
+            newLine = newLine.replace(rexStatsClean1, '$1\n')
+            newLine = newLine.replace(rexStatsClean2, '$1')
+            newLine = newLine.replace(rexComma, '')
+            newLine = newLine.trim()
+            newLine = newLine.replace(rexStatsClean1, '\t$1,')
+            newLine = newLine.replace(rexStatsClean4, '\t$1,')
+            var lastChar = newLine.substr(newLine.length - 1)
+            if (lastChar == ","){
+                newLine = newLine.slice(0, -1)
+            }
+            edit.replace(document.uri, currentLine.range, currentLine.text.replace(currentLine.text, newLine));
         }
     }
-
     return vscode.workspace.applyEdit(edit);
 }
